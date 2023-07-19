@@ -9,5 +9,8 @@ int main(int argc, char *argv[])
     jsonObject["salePrice"] = 56;
     jsonObject["officierID"] = "2%19%1";
     myTcpServer.salesTransaction(jsonObject);
+	jsonObject["salePrice"] = 61;
+    jsonObject["officierID"] = "8%23%1";
+    myTcpServer.salesTransaction(jsonObject);
     return a.exec();
 }

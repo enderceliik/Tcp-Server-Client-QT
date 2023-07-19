@@ -1,3 +1,6 @@
+// https://github.com/enderceliik
+// Ender CELIK
+
 #include "mytcpserver.h"
 
 MyTcpServer::MyTcpServer(QObject *parent)
@@ -22,9 +25,8 @@ QByteArray MyTcpServer::communicateWithServer(QByteArray dispatchData)
         else
         {
             qDebug() << "Failed to send JSON data to server.";
-            // return yapisi
         }
-        if (socket->waitForReadyRead(2000)) // Sure ayarlanabilir sunucunun durumuna gore
+        if (socket->waitForReadyRead(3000))
         {
             dispatchData.clear();
             dispatchData = socket->readAll();
@@ -39,7 +41,6 @@ QByteArray MyTcpServer::communicateWithServer(QByteArray dispatchData)
 
 void MyTcpServer::salesTransaction(QJsonObject jsonObject)
 {
-//    QByteArray responseFromServer; // Temprary for now.
     QJsonDocument jsonDocument(jsonObject);
     QByteArray jsonDataByteArray = jsonDocument.toJson();
     QByteArray responseFromServer = communicateWithServer(jsonDataByteArray);
@@ -59,38 +60,6 @@ void MyTcpServer::salesTransaction(QJsonObject jsonObject)
         qDebug() << "Officier ID: " + officierID;
     }
 }
-
-
-
-// multipleconnection
-    // wireshark
-//    QJsonObject jsonObject;
-//    jsonObject["name"] = "John Doe";
-//    jsonObject["age"] = 30;
-//    QJsonArray jsonArray;
-//    QJsonObject obj1;
-//    obj1["id"] = 201705;
-//    obj1["amount"] = 16;
-//    obj1["price"] = 48;
-//    jsonArray.append(obj1);
-
-//    QJsonObject obj2;
-//    obj2["id"] = 201761;
-//    obj2["amount"] = 9;
-//    obj2["price"] = 27;
-//    jsonArray.append(obj2);
-
-
-//    QJsonDocument jsonDocument(jsonArray);
-//    QByteArray jsonData = jsonDocument.toJson();
-//    socket->write(jsonData);
-//    if (socket->waitForBytesWritten()) {
-//        qDebug() << "JSON data has been successfully sent to the server.";
-//    } else {
-//        qDebug() << "Failed to send JSON data to server.";
-//            return;
-//    }
-
 
 
 

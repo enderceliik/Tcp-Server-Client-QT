@@ -1,3 +1,6 @@
+// https://github.com/enderceliik
+// Ender CELIK
+
 #include "mytcpserver.h"
 
 MyTcpServer::MyTcpServer(QObject *parent) : QObject(parent)
@@ -17,11 +20,6 @@ void MyTcpServer::newConnection()
 {
     socket = server->nextPendingConnection();
     connect(socket, &QTcpSocket::readyRead, this, &MyTcpServer::onReadyRead);
-    // if sorgusu socket dinler sorgusu
-//    socket->write("Hello Client! \r\n");
-//    socket->flush();
-//    socket->waitForBytesWritten(1500);
-//    socket->close();
 }
 
 void MyTcpServer::onReadyRead()
@@ -51,12 +49,11 @@ void MyTcpServer::onReadyRead()
             QString officierID = jsonObject.value("officierID").toString();
             qDebug() << "Sale price: " + QString::number(salePrice);
             qDebug() << "Officier ID: " + officierID;
-            jsonObject["salePrice"] = 150;
-            jsonObject["officierID"] = "654981";
+			jsonObject["salePrice"] = salePrice;
+			jsonObject["officierID"] = officierID + " accepted";
             QJsonDocument jsonDocument(jsonObject);
             QByteArray jsonData = jsonDocument.toJson();
             socket->write(jsonData);
-
             if (socket->waitForBytesWritten(5000))
             {
                 qDebug() << "JSON data has been successfully sent to the client.";
