@@ -15,41 +15,52 @@ MyTcpServer::MyTcpServer(QObject *parent) : QObject(parent)
 }
 void MyTcpServer::newConnection()
 {
-    QTcpSocket *socket = server->nextPendingConnection();
+    socket = server->nextPendingConnection();
     connect(socket, &QTcpSocket::readyRead, this, &MyTcpServer::onReadyRead);
+    // if sorgusu socket dinler sorgusu
 //    socket->write("Hello Client! \r\n");
 //    socket->flush();
-//    socket->waitForBytesWritten(48000);
+//    socket->waitForBytesWritten(1500);
 //    socket->close();
 }
 
 void MyTcpServer::onReadyRead()
 {
-    QTcpSocket* socket = qobject_cast<QTcpSocket*>(sender());
-	if(socket)
-	{
-		QByteArray jsonData = socket->readAll();
-//        qDebug() << "Received message from  client: " << data;
-		QJsonParseError jsonParseError;
-		QJsonDocument jsonDocument = QJsonDocument::fromJson(jsonData,&jsonParseError);
-		if(jsonParseError.error != QJsonParseError::NoError)
-		{
-			qDebug() << "JSON Parse error: " << jsonParseError.errorString();
-			return;
-		}
-		if(jsonDocument.isArray())
-		{
-			QJsonArray jsonArray = jsonDocument.array();
-			for (const QJsonValue& value : jsonArray) {
-					qDebug() << value;
-				}
-		}
-		else if(jsonDocument.isObject())
-		{
-			QJsonObject jsonObject = jsonDocument.object();
-			QString name = jsonObject.value("name").toString();
-			int age = jsonObject.value("age").toInt();
-			qDebug() << name;
-		}
+    socket = qobject_cast<QTcpSocket*>(sender());
+    if(socket)
+    {
+        QByteArray jsonData = socket->readAll();
+        QJsonParseError jsonParseError;
+        QJsonDocument jsonDocument = QJsonDocument::fromJson(jsonData,&jsonParseError);
+        if(jsonParseError.error != QJsonParseError::NoError)
+        {
+            qDebug() << "JSON Parse error: " << jsonParseError.errorString();
+            return;
+        }
+        if(jsonDocument.isArray())
+        {
+            QJsonArray jsonArray = jsonDocument.array();
+            for (const QJsonValue& value : jsonArray) {
+                    qDebug() << value;
+                }
+        }
+        else if(jsonDocument.isObject())
+        {
+            QJsonObject jsonObject = jsonDocument.object();
+            int salePrice = jsonObject.value("salePrice").toInt();
+            QString officierID = jsonObject.value("officierID").toString();
+            qDebug() << "Sale price: " + QString::number(salePrice);
+            qDebug() << "Officier ID: " + officierID;
+            jsonObject["salePrice"] = 150;
+            jsonObject["officierID"] = "654981";
+            QJsonDocument jsonDocument(jsonObject);
+            QByteArray jsonData = jsonDocument.toJson();
+            socket->write(jsonData);
+
+            if (socket->waitForBytesWritten(5000))
+            {
+                qDebug() << "JSON data has been successfully sent to the client.";
+            }
+        }
     }
 }
